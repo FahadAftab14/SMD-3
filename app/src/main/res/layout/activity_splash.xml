@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splash_background"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <!-- Decorative icon chips approximating the Figma illustration -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_icon_chip"
+            android:backgroundTint="@color/chip_icon_teal"
+            android:gravity="center"
+            android:text="&#128273;"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_icon_chip"
+            android:backgroundTint="@color/chip_icon_navy"
+            android:gravity="center"
+            android:text="&#9881;&#65039;"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_icon_chip"
+            android:backgroundTint="@color/chip_icon_pink"
+            android:gravity="center"
+            android:text="&#9993;&#65039;"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="40dp">
+
+        <TextView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_icon_chip"
+            android:backgroundTint="@color/chip_icon_navy"
+            android:gravity="center"
+            android:text="&#128274;"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_icon_chip"
+            android:backgroundTint="@color/chip_icon_mint"
+            android:gravity="center"
+            android:text="&#128722;"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_icon_chip"
+            android:backgroundTint="@color/chip_icon_purple"
+            android:gravity="center"
+            android:text="&#10084;&#65039;"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSplashHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/splash_heading"
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginBottom="40dp" />
+
+    <Button
+        android:id="@+id/btnGetStarted"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/get_started"
+        android:textColor="@color/card_white"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:background="@drawable/bg_button_dark_rounded"
+        android:elevation="0dp" />
+
+</LinearLayout>

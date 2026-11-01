@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaskFlow</string>
+    <string name="splash_heading">Management of a project will be easier if it is done well</string>
+    <string name="get_started">Get Started</string>
+    <string name="welcome_message">Hi, %1$s</string>
+    <string name="welcome_subtitle">Are you ready to get back to work?</string>
+    <string name="workspace_label">WORKSPACE</string>
+    <string name="workspace_name">My Workspace</string>
+    <string name="workspace_created_date">Created : 20 May 2022</string>
+    <string name="new_project">+ New Project</string>
+    <string name="upcoming_label">UPCOMING</string>
+    <string name="invite">Invite</string>
+    <string name="today_task">Today\'s Task</string>
+    <string name="add_task">+ Add Task</string>
+    <string name="no_attachments">No attachments</string>
+</resources>

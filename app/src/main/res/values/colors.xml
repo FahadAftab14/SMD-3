@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splash_background">#E8ECD7</color>
+    <color name="home_background">#F5F6F8</color>
+    <color name="card_white">#FFFFFF</color>
+    <color name="text_primary">#1A1A2E</color>
+    <color name="text_secondary">#7A7F8C</color>
+    <color name="tag_background">#EDE7FB</color>
+    <color name="tag_text">#7B5CE0</color>
+    <color name="button_dark">#1A1A2E</color>
+    <color name="accent_blue">#3D7BFF</color>
+    <color name="divider">#E3E5EA</color>
+    <color name="edittext_border">#D6D8DE</color>
+    <color name="checkbox_tint">#3D7BFF</color>
+    <color name="dialog_field_bg">#EEF0F4</color>
+    <color name="chip_icon_teal">#2FBFA0</color>
+    <color name="chip_icon_navy">#20264D</color>
+    <color name="chip_icon_pink">#FF6FA5</color>
+    <color name="chip_icon_purple">#7B5CE0</color>
+    <color name="chip_icon_mint">#39C6A8</color>
+    <color name="attachment_chip_bg">#F1F2F6</color>
+    <color name="avatar_one">#FF8A65</color>
+    <color name="avatar_two">#4DB6AC</color>
+    <color name="avatar_three">#7986CB</color>
+    <color name="attachment_chip_pink">#FBE3E4</color>
+    <color name="attachment_chip_lavender">#E6E4F7</color>
+    <color name="attachment_chip_cream">#FBF2DC</color>
+    <color name="attachment_chip_mint">#DFF3EA</color>
+</resources>
