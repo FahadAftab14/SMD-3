@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.TaskFlow" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+    <!-- Light theme only: every screen and dialog is drawn with explicit light
+         colors, so a phone in dark mode can no longer make text invisible. -->
+    <style name="Theme.TaskFlow" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/button_dark</item>
         <item name="colorPrimaryVariant">@color/button_dark</item>
         <item name="colorOnPrimary">@color/card_white</item>
-        <item name="colorSecondary">@color/accent_blue</item>
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="colorSecondary">@color/blue_primary</item>
+        <item name="android:statusBarColor">@color/home_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/home_background</item>
+    </style>
+
+    <!-- Tab labels: normal case, readable size, never all-caps. -->
+    <style name="TaskFlowTabText" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>

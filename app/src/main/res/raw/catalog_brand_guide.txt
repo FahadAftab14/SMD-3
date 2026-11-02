@@ -1,0 +1,22 @@
+BRAND GUIDELINES
+
+Logo
+Use the full-color logo on white or very light backgrounds. Keep clear space equal to the height of the letter "S" on every side.
+
+Colors
+Primary blue   #2F9BF4
+Deep navy      #1A1A2E
+Accent purple  #7B5CE0
+Soft pink      #FF6FA5
+
+Typography
+Headings: bold, sentence case.
+Body text: regular, 14 to 16 px, high contrast on light backgrounds.
+
+Do
+- Keep layouts simple and aligned to an 8 px grid.
+- Use one accent color per screen.
+
+Do not
+- Stretch or recolor the logo.
+- Put body text on busy images.

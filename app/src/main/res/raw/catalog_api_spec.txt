@@ -1,0 +1,24 @@
+AUTH API SPECIFICATION (DRAFT)
+
+POST /auth/register
+Body: { "email": string, "password": string }
+Returns 201 with the new user id.
+
+POST /auth/login
+Body: { "email": string, "password": string }
+Returns 200 with { "accessToken": string, "refreshToken": string }.
+Returns 401 for wrong credentials.
+
+POST /auth/refresh
+Body: { "refreshToken": string }
+Returns 200 with a new access token.
+Returns 401 if the refresh token is expired or revoked.
+
+POST /auth/logout
+Body: { "refreshToken": string }
+Revokes the refresh token. Returns 204.
+
+Notes
+- All endpoints use HTTPS and JSON.
+- Passwords are never logged or returned.
+- Error format: { "error": string, "code": number }

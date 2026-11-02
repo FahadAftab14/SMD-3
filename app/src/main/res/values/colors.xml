@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Colors from Assignment 2 (kept so the old screens still build) -->
     <color name="splash_background">#E8ECD7</color>
     <color name="home_background">#F5F6F8</color>
     <color name="card_white">#FFFFFF</color>
     <color name="text_primary">#1A1A2E</color>
-    <color name="text_secondary">#7A7F8C</color>
+    <color name="text_secondary">#6B7180</color>
     <color name="tag_background">#EDE7FB</color>
     <color name="tag_text">#7B5CE0</color>
     <color name="button_dark">#1A1A2E</color>
@@ -26,4 +27,19 @@
     <color name="attachment_chip_lavender">#E6E4F7</color>
     <color name="attachment_chip_cream">#FBF2DC</color>
     <color name="attachment_chip_mint">#DFF3EA</color>
+
+    <!-- Added for Assignment 3 -->
+    <color name="blue_primary">#2F9BF4</color>
+    <color name="blue_light">#E6F2FD</color>
+    <color name="border_light">#E3E7EE</color>
+    <color name="search_bg">#EEF2F8</color>
+    <color name="progress_track">#E4EBF4</color>
+    <color name="done_text">#5E6573</color>
+    <color name="overdue_red">#D92D3F</color>
+    <color name="overdue_bg">#FDE7EA</color>
+    <color name="warning_orange">#B45309</color>
+    <color name="dot_todo">#8A94A6</color>
+    <color name="dot_progress">#2F9BF4</color>
+    <color name="dot_done">#12B76A</color>
+    <color name="dot_overdue">#F04461</color>
 </resources>

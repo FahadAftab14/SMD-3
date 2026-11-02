@@ -1,0 +1,20 @@
+RELEASE NOTES - VERSION 1.0
+
+New
+- Project dashboard with progress bars.
+- Task lists with status, priority and due dates.
+- File attachments with image and text preview.
+
+Improved
+- Faster start-up time.
+- Clearer overdue indicators on tasks.
+
+Fixed
+- Counts now always match the task list.
+- Back navigation keeps your changes.
+
+Verification checklist
+[x] Regression suite passed
+[x] Staging deployment verified
+[x] Smoke tests complete
+[x] Release notes signed off

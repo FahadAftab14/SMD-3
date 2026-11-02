@@ -1,0 +1,20 @@
+MEETING NOTES - LOGIN API KICKOFF
+
+Attendees: backend team, QA lead, product owner
+
+Decisions
+1. Users sign in with email and password.
+2. Access tokens expire after 15 minutes.
+3. Refresh tokens last 7 days and can be revoked.
+
+Action items
+- Schema for the users table (done).
+- Password hashing with a per-user salt (done).
+- Login endpoint and token signing (in progress).
+- Rate limiting: 5 failed attempts per minute per account.
+
+Open questions
+- Do we need social sign-in in the first release?
+- Where do we store refresh tokens on mobile?
+
+Next meeting: after the login endpoint is merged.

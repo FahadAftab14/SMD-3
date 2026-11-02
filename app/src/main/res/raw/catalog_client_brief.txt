@@ -1,0 +1,27 @@
+CLIENT BRIEF - SERVICE PAGE WEBSITE
+
+Goal
+Create a page that explains the services our company offers. The page must feel clean, modern and trustworthy.
+
+Look and feel
+- Main colors: blue and red, with plenty of white space.
+- Friendly, simple language. No technical jargon.
+- Every service gets its own product card.
+
+Each product card needs
+1. A short title.
+2. Two lines of description.
+3. A starting price.
+4. A "Learn more" button.
+
+Pages and sections
+- Hero banner with a headline and a call to action.
+- Services grid (six cards).
+- Pricing table that works on small screens.
+- Contact form with validation.
+
+Deadline
+First low fidelity version in one week. Final design approved by the client before development starts.
+
+Contact
+Client lead: A. Rahman
