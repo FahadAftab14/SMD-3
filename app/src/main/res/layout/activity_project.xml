@@ -1,214 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/card_white"
     android:fitsSystemWindows="true"
-    android:background="@color/card_white">
+    android:orientation="vertical">
 
-    <!-- Top bar: back chevron, decorative avatar row, Invite pill (Requirement 5) -->
+    <!-- Back arrow, avatars and Invite. The avatars and Invite are UI only. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp">
 
         <TextView
-            android:id="@+id/ivBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="&#8249;"
-            android:textColor="@color/text_primary"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:paddingEnd="8dp"
+            android:id="@+id/btnBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_back_circle"
             android:clickable="true"
-            android:focusable="true" />
+            android:contentDescription="Back to projects"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="&#8592;"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- Decorative avatars: invite/collaboration is out of scope for this assignment -->
         <TextView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginEnd="-10dp"
             android:background="@drawable/bg_avatar_circle"
             android:backgroundTint="@color/avatar_one"
             android:gravity="center"
-            android:text="A"
+            android:text="JD"
             android:textColor="@color/card_white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginEnd="-10dp"
             android:background="@drawable/bg_avatar_circle"
             android:backgroundTint="@color/avatar_two"
             android:gravity="center"
-            android:text="B"
+            android:text="AL"
             android:textColor="@color/card_white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginEnd="14dp"
             android:background="@drawable/bg_avatar_circle"
             android:backgroundTint="@color/avatar_three"
             android:gravity="center"
-            android:text="C"
+            android:text="MK"
             android:textColor="@color/card_white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/btnInviteProject"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_invite_pill"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="6dp"
-            android:text="@string/invite"
+            android:paddingVertical="7dp"
+            android:text="Invite"
             android:textColor="@color/card_white"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <ScrollView
+    <TextView
+        android:id="@+id/tvProjectTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_tag_chip"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:textColor="@color/tag_text"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvProjectName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/text_primary"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <!-- Scrollable so the four labels are never clipped or shrunk. -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/card_white"
+        app:tabIndicatorColor="@color/blue_primary"
+        app:tabIndicatorHeight="3dp"
+        app:tabMinWidth="0dp"
+        app:tabMode="scrollable"
+        app:tabPaddingEnd="16dp"
+        app:tabPaddingStart="16dp"
+        app:tabSelectedTextColor="@color/blue_primary"
+        app:tabTextAppearance="@style/TaskFlowTabText"
+        app:tabTextColor="@color/text_secondary" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_light" />
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingBottom="24dp">
-
-            <!-- Project tag (Requirement 3: viewable) -->
-            <TextView
-                android:id="@+id/tvTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_tag_chip"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:textColor="@color/tag_text"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"
-                tools:text="User Interface" />
-
-            <!-- Project name -->
-            <TextView
-                android:id="@+id/tvProjectName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp"
-                tools:text="Create Service Page Website" />
-
-            <!-- Project description -->
-            <TextView
-                android:id="@+id/tvProjectDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:lineSpacingExtra="3dp"
-                android:layout_marginBottom="18dp"
-                tools:text="Create a page display about services for the company website in blue and red and provide some product information on each product card" />
-
-            <!-- Attachments (viewable, Requirement 3) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Attachments"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginBottom="20dp">
-
-                <LinearLayout
-                    android:id="@+id/llAttachments"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
-            </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/tvNoAttachments"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_attachments"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:visibility="gone"
-                android:layout_marginBottom="20dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Today's Task header + Add Task -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/today_task"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/btnAddTask"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_button_dark_rounded"
-                    android:paddingHorizontal="14dp"
-                    android:paddingVertical="8dp"
-                    android:text="@string/add_task"
-                    android:textColor="@color/card_white"
-                    android:textSize="12sp"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </LinearLayout>
-
-            <!-- Checklist (Requirement 4) -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvTasks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_task" />
-
-        </LinearLayout>
-    </ScrollView>
-
+        android:layout_weight="1"
+        android:background="@color/home_background" />
 </LinearLayout>

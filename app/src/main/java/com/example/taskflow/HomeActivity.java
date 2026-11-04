@@ -1,198 +1,164 @@
 package com.example.taskflow;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.taskflow.adapters.ProjectAdapter;
-import com.example.taskflow.models.Project;
-import com.example.taskflow.models.Task;
+import com.example.taskflow.adapters.ProjectListAdapter;
+import com.example.taskflow.data.AttachmentCatalog;
+import com.example.taskflow.data.Project;
+import com.example.taskflow.data.SampleData;
+import com.example.taskflow.ui.ProjectDialogHelper;
+import com.example.taskflow.util.SimpleTextWatcher;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Requirement 2: Home screen with
- *   1) a welcome header,
- *   2) workspace info + "New Project" dialog,
- *   3) the "Upcoming" projects list.
- *
- * Requirement 4: task ticks made inside ProjectActivity are reflected here
- * because the (mutated) Project object is returned through the
- * Activity Result API and swapped back into the adapter's list.
+ * Home screen. It owns the FULL project collection (allProjects). The ListView
+ * shows shownProjects, which is allProjects filtered by the search text.
+ * Projects are always found by their unique id, never by name or row position.
  */
-public class HomeActivity extends AppCompatActivity implements ProjectAdapter.OnProjectClickListener {
+public class HomeActivity extends AppCompatActivity {
 
-    private TextView tvWelcomeMessage;
-    private Button btnNewProject;
+    private static final String STATE_PROJECTS = "state_projects";
 
-    private RecyclerView rvProjects;
-    private ProjectAdapter projectAdapter;
-    private ArrayList<Project> projectList;
+    private final ArrayList<Project> allProjects = new ArrayList<>();
+    private final ArrayList<Project> shownProjects = new ArrayList<>();
+    private ProjectListAdapter adapter;
+    private String searchQuery = "";
 
-    private int selectedProjectPosition = -1;
-    private ActivityResultLauncher<Intent> projectActivityLauncher;
+    private TextView tvShowingCount;
+    private ListView listProjects;
+
+    private ActivityResultLauncher<Intent> projectLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        registerProjectActivityLauncher();
+        registerProjectLauncher();
+        loadProjects(savedInstanceState);
         initViews();
-        loadInitialProjects();
-        setupProjectsRecyclerView();
-        setupClickListeners();
-    }
-
-    private void initViews() {
-        tvWelcomeMessage = findViewById(R.id.tvWelcomeMessage);
-        btnNewProject = findViewById(R.id.btnNewProject);
-        rvProjects = findViewById(R.id.rvProjects);
-
-        tvWelcomeMessage.setText(getString(R.string.welcome_message, "Fahad"));
-    }
-
-    // Seed data so the "Upcoming" list is not empty on first launch.
-    private void loadInitialProjects() {
-        projectList = new ArrayList<>();
-
-        ArrayList<Task> serviceTasks = new ArrayList<>();
-        serviceTasks.add(new Task(UUID.randomUUID().toString(),
-                "Create brand guideline for website design", true));
-        serviceTasks.add(new Task(UUID.randomUUID().toString(),
-                "Create low fidelity service page website", false));
-
-        ArrayList<String> serviceAttachments = new ArrayList<>();
-        serviceAttachments.add("sports-projectv2.fig");
-        serviceAttachments.add("briefing_from_client.pdf");
-        serviceAttachments.add("mount_asset.png");
-
-        projectList.add(new Project(
-                UUID.randomUUID().toString(),
-                "User Interface",
-                "Service Page Website",
-                "Make a page display about services for the website company with blue and red colors",
-                serviceAttachments,
-                serviceTasks
-        ));
-
-    }
-
-    private void setupProjectsRecyclerView() {
-        projectAdapter = new ProjectAdapter(projectList, this);
-        rvProjects.setLayoutManager(new LinearLayoutManager(this));
-        rvProjects.setAdapter(projectAdapter);
-    }
-
-    private void setupClickListeners() {
-        btnNewProject.setOnClickListener(v -> showNewProjectDialog());
-    }
-
-    // Requirement 2.2: AlertDialog asking for tag, name, description and attachment.
-    private void showNewProjectDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_new_project, null);
-
-        EditText etProjectName = dialogView.findViewById(R.id.etProjectName);
-        EditText etProjectTag = dialogView.findViewById(R.id.etProjectTag);
-        EditText etAttachment = dialogView.findViewById(R.id.etAttachment);
-        EditText etProjectDescription = dialogView.findViewById(R.id.etProjectDescription);
-        TextView btnSubmit = dialogView.findViewById(R.id.btnSubmitNewProject);
-        TextView ivClose = dialogView.findViewById(R.id.ivCloseNewProjectDialog);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        // Let our own rounded card drawable show through instead of the
-        // default AlertDialog window background.
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
-
-        ivClose.setOnClickListener(v -> dialog.dismiss());
-
-        btnSubmit.setOnClickListener(v -> {
-            String name = etProjectName.getText().toString().trim();
-            String tag = etProjectTag.getText().toString().trim();
-            String attachment = etAttachment.getText().toString().trim();
-            String description = etProjectDescription.getText().toString().trim();
-
-            if (TextUtils.isEmpty(name) || TextUtils.isEmpty(tag)) {
-                Toast.makeText(this, "Project name and tag are required", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            addNewProjectToUpcomingList(tag, name, description, attachment);
-            dialog.dismiss();
-        });
-
-        dialog.show();
-    }
-
-    private void addNewProjectToUpcomingList(String tag, String name, String description, String attachment) {
-        ArrayList<String> attachments = new ArrayList<>();
-        if (!TextUtils.isEmpty(attachment)) {
-            for (String fileName : attachment.split(",")) {
-                String trimmed = fileName.trim();
-                if (!trimmed.isEmpty()) {
-                    attachments.add(trimmed);
-                }
-            }
-        }
-
-        Project newProject = new Project(
-                UUID.randomUUID().toString(),
-                tag,
-                name,
-                description,
-                attachments,
-                new ArrayList<>()
-        );
-
-        projectList.add(0, newProject);
-        projectAdapter.notifyItemInserted(0);
-        rvProjects.scrollToPosition(0);
-    }
-
-    /**
-     * Requirement 6: launches ProjectActivity for a result instead of
-     * hardcoding data — the same Project object travels there via Intent
-     * extra and comes back (possibly mutated) via the result Intent.
-     */
-    private void registerProjectActivityLauncher() {
-        projectActivityLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Project updatedProject = result.getData().getParcelableExtra(ProjectActivity.EXTRA_PROJECT);
-                        if (updatedProject != null && selectedProjectPosition != -1) {
-                            projectList.set(selectedProjectPosition, updatedProject);
-                            projectAdapter.notifyItemChanged(selectedProjectPosition);
-                        }
-                    }
-                }
-        );
+        applyFilter();
     }
 
     @Override
-    public void onProjectClick(Project project, int position) {
-        selectedProjectPosition = position;
-        Intent intent = new Intent(HomeActivity.this, ProjectActivity.class);
-        intent.putExtra(ProjectActivity.EXTRA_PROJECT, project);
-        projectActivityLauncher.launch(intent);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(STATE_PROJECTS, allProjects);
+    }
+
+    private void loadProjects(Bundle savedInstanceState) {
+        ArrayList<Project> restored = null;
+        if (savedInstanceState != null) {
+            restored = savedInstanceState.getParcelableArrayList(STATE_PROJECTS);
+        }
+        if (restored != null) {
+            allProjects.addAll(restored);
+        } else {
+            allProjects.addAll(SampleData.createProjects());
+        }
+    }
+
+    private void initViews() {
+        TextView tvWelcome = findViewById(R.id.tvWelcomeMessage);
+        tvWelcome.setText(getString(R.string.welcome_message, "Fahad"));
+
+        tvShowingCount = findViewById(R.id.tvShowingProjects);
+        listProjects = findViewById(R.id.listProjects);
+        listProjects.setEmptyView(findViewById(R.id.tvProjectsEmpty));
+
+        adapter = new ProjectListAdapter(this, shownProjects);
+        listProjects.setAdapter(adapter);
+
+        // Clicking a row opens that project. The row's Project object is handed over
+        // through an intent extra; Home later finds it again by its id.
+        listProjects.setOnItemClickListener((parent, row, position, id) -> {
+            Project clicked = adapter.getItem(position);
+            Intent intent = new Intent(HomeActivity.this, ProjectActivity.class);
+            intent.putExtra(ProjectActivity.EXTRA_PROJECT, clicked);
+            projectLauncher.launch(intent);
+        });
+
+        EditText etSearch = findViewById(R.id.etProjectSearch);
+        etSearch.addTextChangedListener(new SimpleTextWatcher(text -> {
+            searchQuery = text;
+            applyFilter();
+        }));
+
+        findViewById(R.id.btnNewProject).setOnClickListener(v -> showNewProjectDialog());
+    }
+
+    private void showNewProjectDialog() {
+        ProjectDialogHelper.show(this, null, (name, tag, description, attachment) -> {
+            // A new project: its own unique id, no tasks, no comments, 0/0 and 0%.
+            Project project = new Project(UUID.randomUUID().toString(), name, tag, description, 0);
+            if (attachment != null) {
+                project.addAttachment(AttachmentCatalog.createLink(attachment));
+            }
+            allProjects.add(project);
+            applyFilter();
+            int position = shownProjects.indexOf(project);
+            if (position >= 0) {
+                listProjects.setSelection(position);
+            }
+        });
+    }
+
+    /** Search is case-insensitive and matches any part of the project name or tag. */
+    private void applyFilter() {
+        String needle = searchQuery.trim().toLowerCase(Locale.ROOT);
+        shownProjects.clear();
+        for (Project project : allProjects) {
+            boolean matches = needle.isEmpty()
+                    || project.getName().toLowerCase(Locale.ROOT).contains(needle)
+                    || project.getTag().toLowerCase(Locale.ROOT).contains(needle);
+            if (matches) {
+                shownProjects.add(project);
+            }
+        }
+        adapter.notifyDataSetChanged();
+
+        int total = allProjects.size();
+        if (needle.isEmpty()) {
+            tvShowingCount.setText("Showing " + total + (total == 1 ? " project" : " projects"));
+        } else {
+            tvShowingCount.setText("Showing " + shownProjects.size() + " of " + total + " projects");
+        }
+    }
+
+    /**
+     * ProjectActivity sends back its (possibly changed) project. The matching Home
+     * project is replaced BY ID, so nothing is duplicated and no other project changes.
+     */
+    private void registerProjectLauncher() {
+        projectLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Intent data = result.getData();
+                    if (data == null) {
+                        return;
+                    }
+                    Project updated = data.getParcelableExtra(ProjectActivity.EXTRA_PROJECT);
+                    if (updated == null) {
+                        return;
+                    }
+                    for (int i = 0; i < allProjects.size(); i++) {
+                        if (allProjects.get(i).getId().equals(updated.getId())) {
+                            allProjects.set(i, updated);
+                            break;
+                        }
+                    }
+                    applyFilter();
+                });
     }
 }

@@ -1,118 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Welcome, workspace and search stay above the list. The ListView is NOT inside a ScrollView. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/home_background"
     android:fitsSystemWindows="true"
-    android:background="@color/home_background">
+    android:orientation="vertical">
 
-    <!-- 2.1 Header: welcome message -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/tvWelcomeMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_primary"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            tools:text="Hi, Fahad" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:text="@string/welcome_subtitle"
             android:textColor="@color/text_secondary"
-            android:textSize="15sp" />
+            android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- 2.2 Workspace info + New Project -->
+    <!-- Workspace card (the arrow icon is decoration only) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/bg_card_outline"
         android:orientation="vertical"
-        android:background="@drawable/bg_card_rounded"
-        android:padding="18dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/workspace_label"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:letterSpacing="0.08" />
+        android:padding="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="4dp">
+            android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/workspace_name"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Workspace"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sports App"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/workspace_created_date"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_back_circle"
+                android:gravity="center"
+                android:importantForAccessibility="no"
                 android:text="&#8599;"
-                android:textColor="@color/text_primary"
-                android:textSize="20sp"
+                android:textColor="@color/blue_primary"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvWorkspaceCreatedDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
-            android:text="@string/workspace_created_date"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnNewProject"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="@string/new_project"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_button_blue"
+            android:stateListAnimator="@null"
+            android:text="+  New Project"
             android:textAllCaps="false"
             android:textColor="@color/card_white"
-            android:background="@drawable/bg_button_dark_rounded"
-            android:elevation="0dp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- 2.3 Upcoming projects -->
+    <EditText
+        android:id="@+id/etProjectSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_search_field"
+        android:hint="Search projects..."
+        android:imeOptions="actionSearch"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:textSize="14sp" />
+
     <TextView
+        android:id="@+id/tvShowingProjects"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/upcoming_label"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        android:letterSpacing="0.08" />
+        android:textSize="12sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvProjects"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingHorizontal="20dp"
-        android:clipToPadding="false"
-        tools:listitem="@layout/item_project" />
+        android:layout_weight="1">
 
+        <ListView
+            android:id="@+id/listProjects"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:listSelector="@android:color/transparent"
+            android:paddingHorizontal="16dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/tvProjectsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="No projects match your search"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

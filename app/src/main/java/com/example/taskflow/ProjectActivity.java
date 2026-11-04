@@ -2,193 +2,226 @@ package com.example.taskflow;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.example.taskflow.adapters.TaskAdapter;
-import com.example.taskflow.models.Project;
-import com.example.taskflow.models.Task;
-
-import java.util.UUID;
+import com.example.taskflow.data.Project;
+import com.example.taskflow.data.TaskQuery;
+import com.example.taskflow.fragments.DiscussionFragment;
+import com.example.taskflow.fragments.FilesFragment;
+import com.example.taskflow.fragments.OverviewFragment;
+import com.example.taskflow.fragments.ProjectHost;
+import com.example.taskflow.fragments.ProjectTabFragment;
+import com.example.taskflow.fragments.TasksFragment;
+import com.google.android.material.tabs.TabLayout;
 
 /**
- * Requirement 3, 4 & 5: Shows a single Project's read-only details plus an
- * editable checklist. Adding a task or ticking a checkbox mutates the SAME
- * Project object that was received via Intent, which is then sent back to
- * HomeActivity through setResult() so both screens stay in sync.
+ * Hosts the header, the TabLayout and the four fragments. It holds the ONE working
+ * Project object for this visit; fragments read it through ProjectHost. The
+ * fragments are added once and then shown/hidden, so each tab keeps its own
+ * search, filters and sort while you move between tabs.
  */
-public class ProjectActivity extends AppCompatActivity implements TaskAdapter.OnTaskCheckListener {
+public class ProjectActivity extends AppCompatActivity implements ProjectHost {
 
     public static final String EXTRA_PROJECT = "extra_project";
-    private static final int MAX_TASK_LENGTH = 500;
+
+    private static final String STATE_PROJECT = "state_project";
+    private static final String STATE_TAB = "state_tab";
+    private static final String[] FRAGMENT_TAGS = {"tab_overview", "tab_tasks", "tab_files", "tab_discussion"};
 
     private Project project;
+    private int currentTab = TAB_OVERVIEW;
 
-    private TextView ivBack;
-    private TextView btnInviteProject;
-    private TextView tvTag, tvProjectName, tvProjectDescription, tvNoAttachments;
-    private LinearLayout llAttachments;
-    private TextView btnAddTask;
-    private RecyclerView rvTasks;
-    private TaskAdapter taskAdapter;
+    private TextView tvProjectName;
+    private TextView tvProjectTag;
+    private TabLayout tabLayout;
+    private final ProjectTabFragment[] fragments = new ProjectTabFragment[4];
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
 
-        project = getIntent().getParcelableExtra(EXTRA_PROJECT);
+        if (savedInstanceState != null) {
+            project = savedInstanceState.getParcelable(STATE_PROJECT);
+            currentTab = savedInstanceState.getInt(STATE_TAB, TAB_OVERVIEW);
+        }
         if (project == null) {
-            Toast.makeText(this, "Unable to load project", Toast.LENGTH_SHORT).show();
+            project = getIntent().getParcelableExtra(EXTRA_PROJECT);
+        }
+        if (project == null) {
             finish();
             return;
         }
 
-        initViews();
-        bindProjectDetails();
-        setupTaskRecyclerView();
-        setupClickListeners();
+        tvProjectName = findViewById(R.id.tvProjectName);
+        tvProjectTag = findViewById(R.id.tvProjectTag);
+        tabLayout = findViewById(R.id.tabLayout);
+
+        bindHeader();
+        setupFragments(savedInstanceState == null);
+        setupTabs();
         setupBackNavigation();
     }
 
-    private void initViews() {
-        ivBack = findViewById(R.id.ivBack);
-        btnInviteProject = findViewById(R.id.btnInviteProject);
-        tvTag = findViewById(R.id.tvTag);
-        tvProjectName = findViewById(R.id.tvProjectName);
-        tvProjectDescription = findViewById(R.id.tvProjectDescription);
-        llAttachments = findViewById(R.id.llAttachments);
-        tvNoAttachments = findViewById(R.id.tvNoAttachments);
-        btnAddTask = findViewById(R.id.btnAddTask);
-        rvTasks = findViewById(R.id.rvTasks);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_PROJECT, project);
+        outState.putInt(STATE_TAB, currentTab);
     }
 
-    private void bindProjectDetails() {
-        tvTag.setText(project.getTag());
+    // ---------------- header, fragments, tabs ----------------
+
+    private void bindHeader() {
         tvProjectName.setText(project.getName());
-        tvProjectDescription.setText(project.getDescription());
-        renderAttachmentChips();
+        tvProjectTag.setText(project.getTag());
     }
 
-    // Cycled per chip so attachments look like the colorful cards in the Figma design.
-    private static final int[] ATTACHMENT_CHIP_COLORS = {
-            R.color.attachment_chip_pink,
-            R.color.attachment_chip_lavender,
-            R.color.attachment_chip_cream,
-            R.color.attachment_chip_mint
-    };
-
-    // Requirement 3 (viewable attachments): builds one chip per attachment, matching the Figma design.
-    private void renderAttachmentChips() {
-        llAttachments.removeAllViews();
-
-        if (project.getAttachments().isEmpty()) {
-            llAttachments.setVisibility(View.GONE);
-            tvNoAttachments.setVisibility(View.VISIBLE);
-            return;
+    private void setupFragments(boolean firstTime) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (firstTime) {
+            String id = project.getId();
+            fm.beginTransaction()
+                    .add(R.id.fragmentContainer, OverviewFragment.newInstance(id), FRAGMENT_TAGS[TAB_OVERVIEW])
+                    .add(R.id.fragmentContainer, TasksFragment.newInstance(id), FRAGMENT_TAGS[TAB_TASKS])
+                    .add(R.id.fragmentContainer, FilesFragment.newInstance(id), FRAGMENT_TAGS[TAB_FILES])
+                    .add(R.id.fragmentContainer, DiscussionFragment.newInstance(id), FRAGMENT_TAGS[TAB_DISCUSSION])
+                    .commitNow();
         }
-
-        llAttachments.setVisibility(View.VISIBLE);
-        tvNoAttachments.setVisibility(View.GONE);
-
-        LayoutInflater inflater = LayoutInflater.from(this);
-        for (int i = 0; i < project.getAttachments().size(); i++) {
-            String attachmentName = project.getAttachments().get(i);
-            View chip = inflater.inflate(R.layout.item_attachment_chip, llAttachments, false);
-
-            int colorRes = ATTACHMENT_CHIP_COLORS[i % ATTACHMENT_CHIP_COLORS.length];
-            chip.setBackgroundTintList(getColorStateList(colorRes));
-
-            TextView tvChipName = chip.findViewById(R.id.tvAttachmentChipName);
-            tvChipName.setText(attachmentName);
-            llAttachments.addView(chip);
+        for (int i = 0; i < fragments.length; i++) {
+            fragments[i] = (ProjectTabFragment) fm.findFragmentByTag(FRAGMENT_TAGS[i]);
         }
     }
 
-    private void setupTaskRecyclerView() {
-        taskAdapter = new TaskAdapter(project.getTasks(), this);
-        rvTasks.setLayoutManager(new LinearLayoutManager(this));
-        rvTasks.setAdapter(taskAdapter);
+    private void setupTabs() {
+        for (int i = 0; i < fragments.length; i++) {
+            tabLayout.addTab(tabLayout.newTab());
+        }
+        updateTabTitles();
+
+        TabLayout.Tab tab = tabLayout.getTabAt(currentTab);
+        if (tab != null) {
+            tab.select();
+        }
+        showFragment(currentTab);
+
+        // Added last, so the setup above does not trigger it.
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab selected) {
+                showFragment(selected.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab unselected) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab reselected) {
+            }
+        });
     }
 
-    private void setupClickListeners() {
-        ivBack.setOnClickListener(v -> navigateBackToHome());
-        btnAddTask.setOnClickListener(v -> showAddTaskDialog());
-        btnInviteProject.setOnClickListener(v ->
-                Toast.makeText(this, "Invite is out of scope for this assignment", Toast.LENGTH_SHORT).show());
+    /** Totals on the tabs come straight from the project's records. */
+    private void updateTabTitles() {
+        setTabTitle(TAB_OVERVIEW, "Overview");
+        setTabTitle(TAB_TASKS, "Tasks (" + project.getTotalTaskCount() + ")");
+        setTabTitle(TAB_FILES, "Files (" + project.getAttachments().size() + ")");
+        setTabTitle(TAB_DISCUSSION, "Discussion (" + project.getCommentCount() + ")");
     }
 
-    // Requirement 5: back arrow returns to HomeActivity with updated data.
+    private void setTabTitle(int index, String title) {
+        TabLayout.Tab tab = tabLayout.getTabAt(index);
+        if (tab != null) {
+            tab.setText(title);
+        }
+    }
+
+    /** Shows exactly one fragment and hides the rest. */
+    private void showFragment(int index) {
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        for (int i = 0; i < fragments.length; i++) {
+            if (i == index) {
+                tx.show(fragments[i]);
+            } else {
+                tx.hide(fragments[i]);
+            }
+        }
+        tx.commitNow();
+        currentTab = index;
+        fragments[index].refreshContent();
+    }
+
+    // ---------------- ProjectHost ----------------
+
+    @Override
+    public Project getProject() {
+        return project;
+    }
+
+    @Override
+    public void onProjectDataChanged() {
+        bindHeader();
+        updateTabTitles();
+        for (ProjectTabFragment fragment : fragments) {
+            if (fragment != null) {
+                fragment.refreshContent();
+            }
+        }
+    }
+
+    @Override
+    public void openTab(int tabIndex) {
+        TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
+        if (tab != null) {
+            tab.select();
+        }
+        if (currentTab != tabIndex) {
+            showFragment(tabIndex);
+        }
+    }
+
+    @Override
+    public void openTasksWithStatus(int status) {
+        ((TasksFragment) fragments[TAB_TASKS]).applyExternalFilter(status, TaskQuery.DATE_ALL);
+        openTab(TAB_TASKS);
+    }
+
+    @Override
+    public void openOverdueTasks() {
+        ((TasksFragment) fragments[TAB_TASKS]).applyExternalFilter(TaskQuery.ANY, TaskQuery.DATE_OVERDUE);
+        openTab(TAB_TASKS);
+    }
+
+    // ---------------- going back ----------------
+
     private void setupBackNavigation() {
+        findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishWithResult();
+            }
+        });
+        // The system Back button/gesture takes the same path as the toolbar arrow.
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                navigateBackToHome();
+                finishWithResult();
             }
         });
     }
 
-    // Requirement 3: add a task via an AlertDialog with a 500-character EditText.
-    private void showAddTaskDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_task, null);
-        EditText etTaskDescription = dialogView.findViewById(R.id.etTaskDescription);
-        etTaskDescription.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_TASK_LENGTH)});
-        TextView btnSubmit = dialogView.findViewById(R.id.btnSubmitTask);
-        TextView ivClose = dialogView.findViewById(R.id.ivCloseAddTaskDialog);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
-
-        ivClose.setOnClickListener(v -> dialog.dismiss());
-
-        btnSubmit.setOnClickListener(v -> {
-            String description = etTaskDescription.getText().toString().trim();
-            if (TextUtils.isEmpty(description)) {
-                Toast.makeText(this, "Task description cannot be empty", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            addTaskToProject(description);
-            dialog.dismiss();
-        });
-
-        dialog.show();
-    }
-
-    private void addTaskToProject(String description) {
-        Task newTask = new Task(UUID.randomUUID().toString(), description, false);
-        project.addTask(newTask);
-        taskAdapter.notifyItemInserted(project.getTasks().size() - 1);
-    }
-
-    // Requirement 4: propagate the checked/unchecked state upward (Project is mutated in place).
-    @Override
-    public void onTaskCheckChanged(int position, boolean isChecked) {
-        // Task object itself is already updated by TaskAdapter; nothing extra
-        // is required here, but the hook is kept for any future side effects.
-    }
-
-    private void navigateBackToHome() {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(EXTRA_PROJECT, project);
-        setResult(RESULT_OK, resultIntent);
+    /** Sends the updated project back; Home replaces its copy by id. */
+    private void finishWithResult() {
+        Intent result = new Intent();
+        result.putExtra(EXTRA_PROJECT, project);
+        setResult(RESULT_OK, result);
         finish();
     }
 }
